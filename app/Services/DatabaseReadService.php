@@ -47,6 +47,132 @@ class DatabaseReadService
     private function resources(): array
     {
         return [
+            'people' => [
+                'table' => 'people',
+                'columns' => [
+                    'id',
+                    'external_id',
+                    'first_name',
+                    'middle_name',
+                    'last_name',
+                    'date_of_birth',
+                    'sex',
+                    'nationality',
+                    'national_id_number',
+                    'phone',
+                    'address',
+                    'notes',
+                    'created_at',
+                    'updated_at',
+                ],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
+            'cases' => [
+                'table' => 'cases',
+                'columns' => [
+                    'id',
+                    'case_number',
+                    'title',
+                    'status',
+                    'summary',
+                    'assigned_officer_user_id',
+                    'opened_at',
+                    'closed_at',
+                    'created_at',
+                    'updated_at',
+                ],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
+            'case-person' => [
+                'table' => 'case_person',
+                'columns' => ['id', 'case_id', 'person_id', 'role', 'created_at', 'updated_at'],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
+            'criminal-records' => [
+                'table' => 'criminal_records',
+                'columns' => [
+                    'id',
+                    'person_id',
+                    'record_number',
+                    'status',
+                    'risk_level',
+                    'charges_summary',
+                    'convictions_summary',
+                    'last_updated_at',
+                    'created_at',
+                    'updated_at',
+                ],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
+            'incident-reports' => [
+                'table' => 'incident_reports',
+                'columns' => [
+                    'id',
+                    'incident_number',
+                    'case_id',
+                    'reported_by_user_id',
+                    'occurred_at',
+                    'location',
+                    'severity',
+                    'description',
+                    'created_at',
+                    'updated_at',
+                ],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
+            'biometric-matches' => [
+                'table' => 'biometric_matches',
+                'columns' => [
+                    'id',
+                    'modality',
+                    'case_id',
+                    'candidate_person_id',
+                    'created_by_user_id',
+                    'probe_path',
+                    'confidence',
+                    'matched_at',
+                    'details',
+                    'created_at',
+                    'updated_at',
+                ],
+                'orderBy' => [
+                    ['column' => 'confidence', 'direction' => 'desc'],
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
+            'evidence-files' => [
+                'table' => 'evidence_files',
+                'columns' => [
+                    'id',
+
+                    'case_id',
+                    'incident_report_id',
+                    'person_id',
+                    'uploaded_by_user_id',
+
+                    'file_path',
+                    'mime_type',
+                    'size_bytes',
+                    'sha256',
+                    'metadata',
+                    'captured_at',
+                    'created_at',
+                    'updated_at',
+                ],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
             'users' => [
                 'table' => 'users',
                 'columns' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'],
