@@ -3,7 +3,7 @@ import LoginPage from './pages/LoginPage';
 import LoadingScreen from './pages/LoadingScreen';
 import Dashboard from './pages/Dashboard';
 
-export default function App() {
+export default function AppRoot() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
