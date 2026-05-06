@@ -1,0 +1,11 @@
+services:
+  face_service:
+    build:
+      context: .
+    ports:
+      - "5005:5005"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5005
+      - FR_MODEL=hog
+      - FR_TOP_K=20

@@ -1,0 +1,11 @@
+name: face_service
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - flask
+  - numpy
+  - pillow
+  - dlib
+  - face_recognition
