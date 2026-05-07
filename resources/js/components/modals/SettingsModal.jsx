@@ -3,6 +3,7 @@ import { X, Settings, User, Monitor, Key, Database, LogOut } from 'lucide-react'
 export default function SettingsModal({
     isOpen,
     onClose,
+    employee,
     settings,
     onSettingsChange,
     onLogout,
@@ -30,16 +31,16 @@ export default function SettingsModal({
                         </h3>
                         <div className="bg-gray-800 rounded-lg p-4 space-y-3">
                             <div className="flex justify-between">
-                                <span className="text-sm text-gray-400">Officer Name</span>
-                                <span className="text-sm">Officer J. Martinez</span>
+                                <span className="text-sm text-gray-400">Employee Name</span>
+                                <span className="text-sm">{employee?.name ?? '—'}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-sm text-gray-400">Badge Number</span>
-                                <span className="text-sm">#4521</span>
+                                <span className="text-sm text-gray-400">Employee ID</span>
+                                <span className="text-sm">{employee?.id ? `#${employee.id}` : '—'}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-sm text-gray-400">Clearance Level</span>
-                                <span className="text-sm text-red-500">Level 3 - Authorized</span>
+                                <span className="text-sm text-gray-400">Email</span>
+                                <span className="text-sm">{employee?.email ?? '—'}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-sm text-gray-400">Department</span>
@@ -108,7 +109,7 @@ export default function SettingsModal({
                             <label className="flex items-center justify-between cursor-pointer">
                                 <div>
                                     <p className="text-sm">Biometric Authentication</p>
-                                    <p className="text-xs text-gray-500">Use fingerprint or face ID to login</p>
+                                    <p className="text-xs text-gray-500">Use fingerprint or face ID to log in</p>
                                 </div>
                                 <input
                                     type="checkbox"

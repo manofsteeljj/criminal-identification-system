@@ -44,7 +44,7 @@ async function fetchDb(resource, { perPage = 100 } = {}) {
     return Array.isArray(body?.data) ? body.data : [];
 }
 
-export default function Dashboard({ onLogout }) {
+export default function Dashboard({ employee, onLogout }) {
     const [activeNav, setActiveNav] = useState('face-recognition');
     const [databases, setDatabases] = useState({
         national: true,
@@ -52,6 +52,7 @@ export default function Dashboard({ onLogout }) {
         missing: false,
     });
     const [uploadedImage, setUploadedImage] = useState(null);
+    const [uploadedImageFile, setUploadedImageFile] = useState(null);
     const [uploadedFingerprint, setUploadedFingerprint] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
     const [showResults, setShowResults] = useState(false);
@@ -178,13 +179,15 @@ export default function Dashboard({ onLogout }) {
                 description: caseItem.summary ?? '',
                 dateOpened: caseItem.opened_at ?? caseItem.created_at,
                 assignedTo: caseItem.assigned_officer_user_id
-                    ? `User #${caseItem.assigned_officer_user_id}`
+                    ? employee?.id && employee.id === caseItem.assigned_officer_user_id
+                        ? employee.name
+                        : `Employee #${caseItem.assigned_officer_user_id}`
                     : 'Unassigned',
                 location: '—',
                 suspects: suspects.map((s) => s.name),
             };
         });
-    }, [cases, suspectsByCaseId]);
+    }, [cases, suspectsByCaseId, employee]);
 
     const incidentView = useMemo(() => {
         return incidents.map((incident) => {
@@ -198,12 +201,16 @@ export default function Dashboard({ onLogout }) {
                 description: incident.description ?? '',
                 dateReported: occurredAt ? occurredAt.toISOString() : incident.created_at,
                 timeReported: occurredAt ? occurredAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
-                reportedBy: incident.reported_by_user_id ? `User #${incident.reported_by_user_id}` : '—',
+                reportedBy: incident.reported_by_user_id
+                    ? employee?.id && employee.id === incident.reported_by_user_id
+                        ? employee.name
+                        : `Employee #${incident.reported_by_user_id}`
+                    : '—',
                 location: incident.location ?? '—',
                 caseId: incident.case_id,
             };
         });
-    }, [incidents]);
+    }, [incidents, employee]);
 
     const currentMatches = useMemo(() => {
         const modality = activeNav === 'face-recognition' ? 'face' : 'fingerprint';
@@ -254,6 +261,8 @@ export default function Dashboard({ onLogout }) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setUploadedImageFile(file);
+
         const reader = new FileReader();
         reader.onload = (event) => {
             setUploadedImage(event.target?.result ?? null);
@@ -278,15 +287,54 @@ export default function Dashboard({ onLogout }) {
         setIsScanning(true);
         setShowResults(false);
 
-        setTimeout(async () => {
-            await refreshData();
-            setIsScanning(false);
-            setShowResults(true);
-        }, 2000);
+        const run = async () => {
+            try {
+                if (activeNav === 'face-recognition') {
+                    if (!uploadedImageFile) {
+                        throw new Error('Please upload a face image first.');
+                    }
+
+                    const form = new FormData();
+                    form.append('image', uploadedImageFile);
+                    form.append('top_k', '10');
+
+                    const resp = await fetch('/api/biometrics/face/match', {
+                        method: 'POST',
+                        body: form,
+                        headers: { Accept: 'application/json' },
+                    });
+
+                    if (!resp.ok) {
+                        let message = 'Face match failed.';
+                        try {
+                            const body = await resp.json();
+                            if (body?.message) message = body.message;
+                            else if (body?.error) message = body.error;
+                        } catch {
+                            // ignore
+                        }
+                        throw new Error(message);
+                    }
+                } else {
+                    // Fingerprint matching isn't implemented yet; keep demo behavior.
+                    await new Promise((r) => setTimeout(r, 1500));
+                }
+
+                await refreshData();
+                setShowResults(true);
+            } catch (error) {
+                setLoadError(error?.message ?? 'Scan failed');
+            } finally {
+                setIsScanning(false);
+            }
+        };
+
+        run();
     };
 
     const handleClearImage = () => {
         setUploadedImage(null);
+        setUploadedImageFile(null);
         setShowResults(false);
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
@@ -1167,6 +1215,7 @@ export default function Dashboard({ onLogout }) {
             <SettingsModal
                 isOpen={showSettings}
                 onClose={() => setShowSettings(false)}
+                employee={employee}
                 settings={settings}
                 onSettingsChange={setSettings}
                 onLogout={() => {

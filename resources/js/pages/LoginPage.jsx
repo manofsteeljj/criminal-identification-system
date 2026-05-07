@@ -2,20 +2,24 @@ import { useState } from 'react';
 import { Shield, User, Lock } from 'lucide-react';
 
 export default function LoginPage({ onLogin }) {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoginError('');
 
-        if (!username || !password) {
-            setLoginError('Please enter both username and password');
+        if (!email || !password) {
+            setLoginError('Please enter both email and password');
             return;
         }
 
-        onLogin(username, password);
+        try {
+            await onLogin(email, password);
+        } catch (err) {
+            setLoginError(err?.message || 'Invalid credentials');
+        }
     };
 
     return (
@@ -34,21 +38,21 @@ export default function LoginPage({ onLogin }) {
 
                 <form onSubmit={handleSubmit} className="bg-gray-900 border border-gray-800 rounded-lg p-8 shadow-2xl">
                     <div className="mb-6">
-                        <label className="block text-xs text-gray-400 mb-2 tracking-wide">OFFICER ID / USERNAME</label>
+                        <label className="block text-xs text-gray-400 mb-2 tracking-wide">EMPLOYEE EMAIL</label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="w-full pl-11 pr-4 py-3 bg-gray-800 border border-gray-700 rounded text-sm focus:outline-none focus:border-red-500 transition-colors"
-                                placeholder="Enter officer ID"
+                                placeholder="employee@example.com"
                             />
                         </div>
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-xs text-gray-400 mb-2 tracking-wide">SECURITY CLEARANCE CODE</label>
+                        <label className="block text-xs text-gray-400 mb-2 tracking-wide">PASSWORD</label>
                         <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
@@ -56,7 +60,7 @@ export default function LoginPage({ onLogin }) {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full pl-11 pr-4 py-3 bg-gray-800 border border-gray-700 rounded text-sm focus:outline-none focus:border-red-500 transition-colors"
-                                placeholder="Enter clearance code"
+                                placeholder="Enter password"
                             />
                         </div>
                     </div>

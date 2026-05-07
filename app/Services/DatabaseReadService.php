@@ -180,6 +180,13 @@ class DatabaseReadService
                     ['column' => 'id', 'direction' => 'desc'],
                 ],
             ],
+            'employees' => [
+                'table' => 'users',
+                'columns' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'],
+                'orderBy' => [
+                    ['column' => 'id', 'direction' => 'desc'],
+                ],
+            ],
             'sessions' => [
                 'table' => 'sessions',
                 'columns' => ['id', 'user_id', 'ip_address', 'user_agent', 'last_activity'],

@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'face_service' => [
+        'base_url' => env('FACE_SERVICE_URL', 'http://127.0.0.1:5005'),
+        'timeout' => (int) env('FACE_SERVICE_TIMEOUT', 15),
+    ],
+
 ];
